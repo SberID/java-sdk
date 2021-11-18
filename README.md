@@ -25,7 +25,7 @@ mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=sdk-
 
 ### Использование
 
-Создать объект **SberApiClient**, указав свои значения **client_id, client_secret** (подробнее в [1.1.1.1. Параметры запроса](https://confluence.sberbank.ru/pages/viewpage.action?pageId=5967418110), шлюзы вызова API. Адреса для запроса access token перечислены в [1.2.2. Шлюзы вызова API ](https://confluence.sberbank.ru/pages/viewpage.action?pageId=6163174647), для получения пользовательских данных - [1.3.2. Шлюзы вызова API](https://confluence.sberbank.ru/pages/viewpage.action?pageId=6163176050).
+Создать объект **SberApiClient**, указав свои значения **client_id, client_secret** (подробнее в [1.1.1.1. Параметры запроса](https://api.developer.sber.ru/product/SberbankID/doc/v1/reqparametrs), шлюзы вызова API. Адреса для запроса access token перечислены в [1.2.2. Шлюзы вызова API ](https://api.developer.sber.ru/product/SberbankID/doc/v1/tokensurl), для получения пользовательских данных - [1.3.2. Шлюзы вызова API](https://api.developer.sber.ru/product/SberbankID/doc/v1/urldata).
 
 ```java
 SberApiClient client = new SberApiClient(
@@ -51,7 +51,7 @@ try (InputStream keyStoreStream = new FileInputStream("./cert.p12")) {
 1. **Адреса** для возврата Auth Code;
 2. **Auth Code**, полученного через фронтенд;
 3. **Nonce** (который использовался при получении Auth Code);
-4. **Code Verifier** (обязателен, если используется [PKCE](https://confluence.sberbank.ru/pages/viewpage.action?pageId=5967418110)).
+4. **Code Verifier** (обязателен, если используется [PKCE](https://api.developer.sber.ru/product/SberbankID/doc/v1/reqparametrs)).
 
 ```java
 AuthData authData = client.authRequest(
@@ -62,7 +62,7 @@ AuthData authData = client.authRequest(
 	.execute();
 ```
 
-Объект **AuthData** содержит поля (в соответствии с [параметрами ответа](https://confluence.sberbank.ru/pages/viewpage.action?pageId=6163174809)):
+Объект **AuthData** содержит поля (в соответствии с [параметрами ответа](https://api.developer.sber.ru/product/SberbankID/doc/v1/tokensanswer)):
 - **accessToken** - Сгенерированный Access token.
 - **tokenType** - Тип запрашиваемого токена. Всегда передается значение «Bearer».
 - **expiresIn** - Время в секундах, в течение которого действует Access Token.
@@ -76,7 +76,7 @@ UserInfoData userInfoData = client.userInfoRequest(authData.getAccessToken()).ex
 String sub = userInfoData.getSub(); //получить необходимый Claim
 ```
 
-В классе **UserInfoData** описаны обязательные поля. При необходимости (для получения дополнительных полей) класс нужно расширить (см. [п.1.3.3. "Параметры ответа"](https://confluence.sberbank.ru/pages/viewpage.action?pageId=6163176151) документации), например:
+В классе **UserInfoData** описаны обязательные поля. При необходимости (для получения дополнительных полей) класс нужно расширить (см. [п.1.3.3. "Параметры ответа"](https://api.developer.sber.ru/product/SberbankID/doc/v1/dataanswerparametrs) документации), например:
 
 ```java
 public class CustomUserInfoData extends UserInfoData {
@@ -123,7 +123,7 @@ String nonce = Utils.randomString();
 ```
 
 Исключительные ситуации:
-- **ApiResponseException, ApiException** - в случае получения ошибки от API (с детализацией ошибки см. [п.1.2.4](https://confluence.sberbank.ru/pages/viewpage.action?pageId=6163175049), [1.3.4 "Описание ошибок"](https://confluence.sberbank.ru/pages/viewpage.action?pageId=6163177200) документации)
+- **ApiResponseException, ApiException** - в случае получения ошибки от API (с детализацией ошибки см. [п.1.2.4](https://api.developer.sber.ru/product/SberbankID/doc/v1/tokensmistakes), [1.3.4 "Описание ошибок"](https://api.developer.sber.ru/product/SberbankID/doc/v1/datamistakes) документации)
 - **IncorrectNonceException** - в случае несовпадения Nonce с тем, который использовался для получение Auth Code.
 - **SberApiClientException** - в случае ошибок чтения сертификата
 - **IncorrectAudException** - в случае несовпадения полученного aud и client_id
